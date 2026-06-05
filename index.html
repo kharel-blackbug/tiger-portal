@@ -796,10 +796,40 @@ function pg(id,btn){
 
 // ─────────── FORM ───────────
 function doSubmit(){
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4_AuC-EHcCpHqs-da07DuVh2d3OxGwzdxlIBAEAwpWTKCZqyn-btJ0GZa7Av5H-E6/exec';
+
+function doSubmit(){
   const req=['ft','fst','fth','fpr','fim','furl'];
-  if(req.some(id=>!document.getElementById(id).value.trim())){alert('Please fill all required fields, including a public source URL.');return;}
-  document.getElementById('sbar').style.display='flex';clearForm();
-  setTimeout(()=>document.getElementById('sbar').style.display='none',8000);
+  if(req.some(id=>!document.getElementById(id).value.trim())){
+    alert('Please fill all required fields, including a public source URL.');
+    return;
+  }
+  const payload = {
+    title:           document.getElementById('ft').value.trim(),
+    state:           document.getElementById('fst').value,
+    theme:           document.getElementById('fth').value,
+    stage:           document.getElementById('fsg').value,
+    problem:         document.getElementById('fpr').value.trim(),
+    impact:          document.getElementById('fim').value.trim(),
+    sourceURL:       document.getElementById('furl').value.trim(),
+    submittedBy:     document.getElementById('fatr').value.trim()
+  };
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(res => {
+    if(res.status === 'ok'){
+      document.getElementById('sbar').style.display='flex';
+      clearForm();
+      setTimeout(()=>document.getElementById('sbar').style.display='none', 8000);
+    } else {
+      alert('Submission failed: ' + res.message);
+    }
+  })
+  .catch(()=>alert('Network error. Please try again.'));
+}
 }
 function clearForm(){
   ['ft','furl','fatr'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
