@@ -1,0 +1,22 @@
+name: Rebuild portal from Google Sheets
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # every 15 minutes
+  workflow_dispatch:           # also allow manual trigger
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Touch index to force rebuild
+        run: |
+          echo "<!-- rebuilt: $(date -u) -->" >> index.html
+          git config user.name "TIGER Bot"
+          git config user.email "tiger@lbsnaa.gov.in"
+          git add index.html
+          git diff --staged --quiet || git commit -m "Auto-rebuild $(date -u)"
+          git push
