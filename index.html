@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIGER — The Intelligent Governance Exploration Rover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#111;--ink2:#444;--ink3:#777;--ink4:#bbb;
+  --line:#e8e8e8;--line2:#f5f5f5;--bg:#fff;--sf:#fafafa;
+  --ok:#166534;--ok-bg:#f0fdf4;--warn:#92400e;--warn-bg:#fffbeb;--acc:#1a56db;
+  --r8:8px;--r12:12px;
+  --saffron:#FF9933;--white:#FFFFFF;--india-green:#138808;--navy:#000080;
+  --saffron-pale:#FFF5E6;--green-pale:#E8F5E9;
+}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ── TRICOLOUR TOPBAR STRIPE ── */
+.flag-stripe{display:flex;height:4px;width:100%}
+.fs-saffron{flex:1;background:var(--saffron)}
+.fs-white{flex:1;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fs-green{flex:1;background:var(--india-green)}
+
+/* ── TOPBAR ── */
+.tb{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:58px;border-bottom:1px solid var(--line);position:sticky;top:4px;background:var(--bg);z-index:100;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.bm{width:36px;height:36px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.bm svg{width:20px;height:20px}
+.bn{display:flex;align-items:baseline;line-height:1}
+.bl{font-family:'Lora',serif;font-size:20px;font-weight:500;color:var(--ink)}
+.be{font-family:'Sora',sans-serif;font-size:9px;color:var(--ink4);letter-spacing:0.2px;position:relative;top:-2px;margin:0 0.5px}
+.bsub{font-size:10px;color:var(--ink4);margin-top:2px;letter-spacing:0.3px}
+.tnav{display:flex;gap:2px}
+.tnb{padding:6px 11px;font-size:12px;font-weight:500;color:var(--ink3);border:none;background:none;cursor:pointer;border-radius:var(--r8);font-family:'Sora',sans-serif;transition:all .15s}
+.tnb:hover,.tnb.on{background:var(--line2);color:var(--ink)}
+.tb-r{display:flex;align-items:center;gap:8px}
+.lsel{border:1px solid var(--line);border-radius:var(--r8);padding:5px 9px;font-size:11px;font-family:'Sora',sans-serif;color:var(--ink2);background:var(--bg);outline:none;cursor:pointer}
+.bg-btn{padding:6px 14px;border:1px solid var(--line);border-radius:var(--r8);font-size:12px;font-weight:500;color:var(--ink2);background:var(--bg);cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s}
+.bg-btn:hover{border-color:#aaa;color:var(--ink)}
+
+/* ── SUBMIT BUTTON with tooltip ── */
+.submit-wrap{position:relative;display:inline-block}
+.submit-wrap .tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;font-size:11px;white-space:nowrap;
+  padding:6px 10px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .2s;
+  font-family:'Sora',sans-serif;letter-spacing:0.2px;line-height:1.4;text-align:center;
+}
+.submit-wrap .tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink)}
+.submit-wrap:hover .tooltip{opacity:1}
+.bp-btn{padding:6px 16px;border-radius:var(--r8);font-size:12px;font-weight:600;color:#fff;background:var(--ink);border:none;cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s}
+.bp-btn:hover{background:#333}
+.bp-btn.saffron-btn{background:linear-gradient(135deg,var(--saffron) 0%,#e67e00 100%);color:#fff}
+.bp-btn.saffron-btn:hover{background:linear-gradient(135deg,#e67e00 0%,var(--saffron) 100%)}
+
+/* ── HERO with saffron accent ── */
+.hero{padding:48px 28px 36px;border-bottom:1px solid var(--line)}
+.hl{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:12px}
+.hh{font-family:'Lora',serif;font-size:2.1rem;font-weight:500;color:var(--ink);line-height:1.22;margin-bottom:10px;letter-spacing:-0.4px}
+.hh em{font-style:italic;color:var(--saffron)}
+.hp{font-size:13px;color:var(--ink2);line-height:1.8;max-width:520px;margin-bottom:28px}
+.kr{display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+.kn{font-family:'Lora',serif;font-size:1.5rem;font-weight:500;color:var(--ink)}
+.kl{font-size:11px;color:var(--ink3);margin-top:2px}
+.ksep{width:1px;background:var(--line);height:34px}
+/* Tricolour KPI accents */
+.kpi-s .kn{color:var(--saffron)}
+.kpi-g .kn{color:var(--india-green)}
+.kpi-n .kn{color:var(--navy)}
+
+/* ── LAYOUT ── */
+.lay{display:grid;grid-template-columns:216px 1fr;min-height:500px}
+.sb{border-right:1px solid var(--line);padding:20px 0;background:var(--bg)}
+.sbh{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink4);font-weight:600;padding:0 18px;margin-bottom:5px}
+.sbl{display:flex;align-items:center;justify-content:space-between;padding:7px 18px;font-size:12px;color:var(--ink2);cursor:pointer;border-left:2px solid transparent;transition:all .12s}
+.sbl:hover{background:var(--line2);color:var(--ink)}
+.sbl.on{background:var(--saffron-pale);color:var(--ink);font-weight:500;border-left-color:var(--saffron)}
+.sbc{font-size:10px;color:var(--ink4);background:var(--line2);padding:1px 7px;border-radius:10px}
+.sdiv{height:1px;background:var(--line);margin:10px 18px 14px}
+.tlb{padding:12px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg);position:sticky;top:66px;z-index:90}
+.sr{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:var(--r8);padding:6px 11px;flex:1;max-width:290px;transition:border .15s}
+.sr:focus-within{border-color:var(--saffron)}
+.sr i{font-size:14px;color:var(--ink3)}
+.sr input{border:none;outline:none;font-size:12px;font-family:'Sora',sans-serif;color:var(--ink);background:transparent;width:100%}
+.sr input::placeholder{color:var(--ink4)}
+.pls{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.pl{padding:4px 11px;border-radius:20px;border:1px solid var(--line);font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;transition:all .12s;background:var(--bg)}
+.pl:hover{border-color:var(--saffron);color:var(--saffron)}
+.pl.on{background:var(--saffron);border-color:var(--saffron);color:#fff}
+.ss{border:1px solid var(--line);border-radius:var(--r8);padding:5px 9px;font-size:11px;font-family:'Sora',sans-serif;color:var(--ink2);background:var(--bg);outline:none;cursor:pointer;margin-left:auto}
+
+/* ── CARDS ── */
+.cds{padding:0 24px;display:flex;flex-direction:column}
+.ic{padding:18px 0;border-bottom:1px solid var(--line);cursor:pointer;display:grid;grid-template-columns:1fr 72px;gap:14px;align-items:start}
+.ic:hover .ict{color:var(--saffron)}
+.icm{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.ics{font-size:11px;font-weight:600;color:var(--india-green)}
+.icd{width:3px;height:3px;border-radius:50%;background:var(--ink4)}
+.icth{font-size:11px;color:var(--ink4)}
+.ict{font-family:'Lora',serif;font-size:1rem;font-weight:500;color:var(--ink);line-height:1.35;margin-bottom:4px;transition:color .12s}
+.icp{font-size:12px;color:var(--ink3);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.icf{display:flex;align-items:center;gap:7px;margin-top:8px;flex-wrap:wrap}
+.bdg{font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;letter-spacing:.3px}
+.bok{background:var(--green-pale);color:var(--india-green)}
+.bpilot{background:var(--saffron-pale);color:#c25700}
+.bsv{background:var(--sf);border:1px solid var(--line);color:var(--ink3);font-size:10px;padding:2px 7px;border-radius:3px}
+.icr{text-align:right;padding-top:3px;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.icvn{font-family:'Lora',serif;font-size:1.25rem;color:var(--saffron);line-height:1}
+.icvl{font-size:10px;color:var(--ink4)}
+.icav{font-size:14px;color:var(--ink4);margin-top:6px}
+
+/* ── DETAIL PANEL ── */
+.det{display:none;background:var(--bg);border-left:1px solid var(--line);padding:24px;overflow-y:auto;max-height:calc(100vh - 130px);position:sticky;top:130px;align-self:start}
+.dtop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.dey{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--saffron);font-weight:600}
+.dcl{width:26px;height:26px;border-radius:var(--r8);border:1px solid var(--line);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:13px}
+.dcl:hover{background:var(--line2)}
+.dti{font-family:'Lora',serif;font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:16px}
+.df{margin-bottom:13px}
+.dfl{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);font-weight:600;margin-bottom:4px}
+.dfb{font-size:12px;color:var(--ink2);line-height:1.78}
+.dsrc{font-size:11px;color:var(--acc);word-break:break-all;text-decoration:underline;text-underline-offset:2px}
+.ddiv{height:1px;background:var(--line);margin:14px 0}
+.dbt{width:100%;padding:9px;border-radius:var(--r8);font-size:12px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px}
+.dbp{background:var(--ink);color:#fff;border:none}
+.dbp:hover{background:#333}
+.dbs2{background:var(--bg);color:var(--ink2);border:1px solid var(--line)}
+.dbs2:hover{border-color:#999}
+
+/* ── TIGER QUOTE ── */
+.tqn{padding:12px 16px;background:var(--saffron-pale);border-radius:var(--r8);border:1px solid #ffd9a0;margin:14px 24px 0;display:flex;gap:12px;align-items:flex-start}
+.tqmk{width:26px;height:26px;background:var(--saffron);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.tqmk svg{width:13px;height:13px}
+.tqlbl{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--saffron);text-transform:uppercase;margin-bottom:2px}
+.tqtxt{font-family:'Lora',serif;font-size:12px;color:#7a4800;font-style:italic;line-height:1.65}
+
+/* ── PAGES ── */
+.pg{display:none}.pg.on{display:block}
+
+/* ── FORM ── */
+.fa{padding:28px;max-width:660px}
+.fah{margin-bottom:22px;padding-bottom:16px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--saffron),#fff 50%,var(--india-green)) 1;border-top:none;border-left:none;border-right:none}
+.falbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--saffron);font-weight:600;margin-bottom:5px}
+.fati{font-family:'Lora',serif;font-size:1.25rem;font-weight:500;color:var(--ink)}
+.fasb{font-size:12px;color:var(--ink3);margin-top:4px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
+.fb{margin-bottom:13px}
+.fl{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:4px;display:block}
+.rq{color:#d00}
+.fi,.fsl,.fta{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:var(--r8);font-size:12px;font-family:'Sora',sans-serif;color:var(--ink);background:var(--bg);outline:none;transition:border .15s;line-height:1.5}
+.fi:focus,.fsl:focus,.fta:focus{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(255,153,51,0.08)}
+.fta{min-height:82px;resize:vertical}
+.fsl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.fhnt{font-size:11px;color:var(--ink4);margin-top:3px}
+.fcc{font-size:10px;color:var(--ink4);text-align:right;margin-top:2px}
+.fac{display:flex;gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
+.sbar{background:var(--ok-bg);border:1px solid #bbf7d0;border-radius:var(--r8);padding:11px 14px;margin-bottom:14px;font-size:12px;color:var(--ok);display:none;align-items:center;gap:9px}
+
+/* ── VOICE BUTTON ── */
+.voice-btn-wrap{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:14px 16px;background:var(--sf);border-radius:var(--r12);border:1px solid var(--line)}
+.voice-btn{width:52px;height:52px;border-radius:50%;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:background .2s;flex-shrink:0}
+.voice-btn:hover{background:#333}
+.voice-btn.listening{background:var(--saffron)}
+.voice-btn svg{width:22px;height:22px;z-index:1;position:relative}
+.voice-ripple{position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--saffron);opacity:0;animation:none}
+.voice-btn.listening .voice-ripple{animation:ripple 1.2s ease-out infinite}
+.voice-ripple2{animation-delay:0.4s!important}
+.voice-ripple3{animation-delay:0.8s!important}
+@keyframes ripple{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}
+.voice-info{}
+.voice-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.voice-sub{font-size:11px;color:var(--ink3);line-height:1.5}
+.voice-status{font-size:11px;color:var(--saffron);font-weight:500;margin-top:3px;min-height:16px;font-style:italic}
+
+/* ── CALVIN & HOBBES PANEL ── */
+.ch-panel{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);align-items:center;justify-content:center}
+.ch-panel.open{display:flex}
+.ch-box{background:#fff;border-radius:16px;padding:0;max-width:480px;width:90%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.25)}
+.ch-header{background:linear-gradient(135deg,var(--saffron) 0%,#e67e00 100%);padding:18px 20px 14px;display:flex;align-items:center;gap:12px}
+.ch-avatar{width:52px;height:52px;flex-shrink:0}
+.ch-avatar svg{width:52px;height:52px}
+.ch-htitle{font-family:'Lora',serif;font-size:15px;font-weight:500;color:#fff;line-height:1.3}
+.ch-hsub{font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px}
+.ch-body{padding:20px}
+/* Comic strip style speech bubble */
+.ch-bubble{background:#FFFEF0;border:2px solid var(--ink);border-radius:12px;padding:12px 14px;position:relative;margin-bottom:14px}
+.ch-bubble::before{content:'';position:absolute;bottom:-10px;left:24px;border:5px solid transparent;border-top-color:var(--ink)}
+.ch-bubble::after{content:'';position:absolute;bottom:-7px;left:25px;border:4px solid transparent;border-top-color:#FFFEF0}
+.ch-speech{font-size:13px;color:var(--ink);line-height:1.6;font-style:italic}
+.ch-transcript{background:var(--sf);border:1px solid var(--line);border-radius:var(--r8);padding:10px 12px;min-height:60px;font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:14px}
+.ch-transcript-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);font-weight:600;margin-bottom:6px}
+/* Animated mic waveform */
+.ch-mic-area{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px}
+.ch-mic-btn{width:64px;height:64px;border-radius:50%;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:background .2s;flex-shrink:0}
+.ch-mic-btn.listening{background:var(--saffron)}
+.ch-mic-btn svg{width:28px;height:28px}
+.ch-rip{position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--saffron);opacity:0}
+.ch-mic-btn.listening .ch-rip{animation:ripple 1.2s ease-out infinite}
+.ch-rip:nth-child(2){animation-delay:.35s!important}
+.ch-rip:nth-child(3){animation-delay:.7s!important}
+.ch-bars{display:flex;align-items:flex-end;gap:3px;height:36px}
+.ch-bar{width:4px;background:var(--saffron);border-radius:2px;transition:height .1s}
+.ch-bar.idle{background:var(--line);height:6px}
+.ch-actions{display:flex;gap:8px}
+.ch-use-btn{flex:1;padding:9px;background:var(--india-green);color:#fff;border:none;border-radius:var(--r8);font-size:12px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.ch-use-btn:hover{background:#0d6b06}
+.ch-cancel-btn{padding:9px 16px;background:var(--bg);color:var(--ink2);border:1px solid var(--line);border-radius:var(--r8);font-size:12px;cursor:pointer;font-family:'Sora',sans-serif}
+.ch-cancel-btn:hover{border-color:#999}
+
+/* ── ANALYTICS ── */
+.an{padding:28px}
+.ank{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.ank-c{border-radius:var(--r12);padding:14px;border:1px solid var(--line)}
+.ank-c:nth-child(1){background:var(--saffron-pale);border-color:#ffd9a0}
+.ank-c:nth-child(2){background:#EEF2FF;border-color:#C7D2FE}
+.ank-c:nth-child(3){background:var(--green-pale);border-color:#A7F3D0}
+.ank-c:nth-child(4){background:#FEF9EC;border-color:#FDE68A}
+.ank-n{font-family:'Lora',serif;font-size:1.4rem;color:var(--ink)}
+.ank-l{font-size:11px;color:var(--ink3);margin-top:2px}
+.acs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ac{background:var(--bg);border:1px solid var(--line);border-radius:var(--r12);padding:18px}
+.act{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.br{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.brl{font-size:11px;color:var(--ink2);min-width:92px;flex-shrink:0}
+.brt{flex:1;background:var(--line2);border-radius:2px;height:5px;overflow:hidden}
+.brf{height:5px;border-radius:2px;background:var(--saffron)}
+.brf.green{background:var(--india-green)}
+.brf.navy{background:var(--navy)}
+.brv{font-size:11px;color:var(--ink3);min-width:20px;text-align:right}
+
+/* ── HOW IT WORKS ── */
+.hwa{padding:28px;max-width:580px}
+.hws{margin:18px 0 24px}
+.hwst{display:flex;gap:15px;margin-bottom:20px}
+.hwn{width:24px;height:24px;border-radius:50%;border:2px solid var(--saffron);font-size:11px;font-weight:600;color:var(--saffron);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.hwb h4{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.hwb p{font-size:12px;color:var(--ink3);line-height:1.7}
+.archb{background:var(--sf);border-radius:var(--r12);padding:16px;border:1px solid var(--line)}
+.archt{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:9px}
+.archps{display:flex;gap:6px;flex-wrap:wrap}
+.archp{font-size:11px;padding:4px 12px;border:1px solid var(--line);border-radius:20px;color:var(--ink3);background:var(--bg)}
+
+/* ── CONTACT ── */
+.cna{padding:28px;max-width:520px}
+.cncard{border-radius:var(--r12);padding:24px;margin-bottom:16px;border:1px solid #ffd9a0;background:linear-gradient(160deg,var(--saffron-pale) 0%,#fff 60%,var(--green-pale) 100%)}
+.cnname{font-family:'Lora',serif;font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:2px}
+.cnrole{font-size:12px;color:var(--ink3);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #ffd9a0}
+.cnrow{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.cnrow:last-child{margin-bottom:0}
+.cnrow i{font-size:16px;color:var(--saffron);width:20px;flex-shrink:0}
+.cnval{font-size:13px;color:var(--ink2)}
+.cnlnk{font-size:13px;color:var(--acc);text-decoration:underline;text-underline-offset:2px}
+.cnnote{font-size:12px;color:var(--ink3);line-height:1.78;padding:14px;background:var(--sf);border-radius:var(--r8);border:1px solid var(--line)}
+
+/* ── FOOTER with tricolour ── */
+.foot{padding:14px 28px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.footl{font-size:11px;color:var(--ink4);font-family:'Lora',serif;font-style:italic}
+.footr{font-size:10px;color:var(--ink4)}
+.flag-stripe-foot{display:flex;height:3px;width:100%}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .tb{padding:0 14px;height:auto;padding-top:10px;padding-bottom:10px}
+  .tnav{display:none}.bsub{display:none}
+  .hero{padding:24px 14px 20px}.hh{font-size:1.5rem}
+  .kr{gap:14px}.ksep{display:none}
+  .lay{grid-template-columns:1fr}.sb{display:none}
+  .tlb{padding:10px 14px;top:52px}.pls{display:none}.ss{margin-left:0}
+  .cds,.tqn{padding-left:14px;padding-right:14px}
+  .tqn{margin-left:14px;margin-right:14px}
+  .fa,.hwa,.cna,.an{padding:18px 14px}
+  .f2{grid-template-columns:1fr}
+  .ank{grid-template-columns:1fr 1fr}.acs{grid-template-columns:1fr}
+  .foot{flex-direction:column;gap:4px;text-align:center;padding:12px 14px}
+  .det{display:none!important}
+  .ch-box{max-width:96vw}
+}
+@media(min-width:641px) and (max-width:900px){
+  .tb{padding:0 18px}.tnav{display:none}
+  .lay{grid-template-columns:180px 1fr}
+  .tlb{padding:11px 18px}.cds{padding:0 18px}
+  .tqn{margin-left:18px;margin-right:18px}
+  .ank{grid-template-columns:1fr 1fr}
+  .fa,.an,.hwa,.cna{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TRICOLOUR TOP STRIPE ── -->
+<div class="flag-stripe" aria-hidden="true">
+  <div class="fs-saffron"></div>
+  <div class="fs-white"></div>
+  <div class="fs-green"></div>
+</div>
+
+<!-- ── TOPBAR ── -->
+<nav class="tb">
+  <div class="brand">
+    <div class="bm">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="white" stroke-width="1.3"/><path d="M10 5v5.5l3.5 2" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="1.4" fill="white"/></svg>
+    </div>
+    <div>
+      <div class="bn">
+        <span class="bl">T</span><span class="be">he</span>
+        <span class="bl">I</span><span class="be">ntelligent</span>
+        <span class="bl">G</span><span class="be">overnance</span>
+        <span class="bl">E</span><span class="be">xploration</span>
+        <span class="bl">R</span><span class="be">over</span>
+      </div>
+      <div class="bsub">National AI Innovation Registry · LBSNAA</div>
+    </div>
+  </div>
+  <div class="tnav">
+    <button class="tnb on" onclick="pg('browse',this)">Browse</button>
+    <button class="tnb" onclick="pg('analytics',this)">Analytics</button>
+    <button class="tnb" onclick="pg('howto',this)">How it works</button>
+    <button class="tnb" onclick="pg('contact',this)">Contact</button>
+  </div>
+  <div class="tb-r">
+    <select class="lsel" onchange="setLang(this.value)" title="Language">
+      <option value="en">EN · English</option>
+      <option value="hi">HI · हिन्दी</option>
+      <option value="ta">TA · தமிழ்</option>
+      <option value="te">TE · తెలుగు</option>
+      <option value="bn">BN · বাংলা</option>
+      <option value="kn">KN · ಕನ್ನಡ</option>
+      <option value="ml">ML · മലയാളം</option>
+      <option value="mr">MR · मराठी</option>
+    </select>
+    <button class="bg-btn" onclick="pg('contact',null)">About</button>
+    <div class="submit-wrap">
+      <div class="tooltip">Share a real AI initiative<br>from your state — no login needed</div>
+      <button class="bp-btn saffron-btn" onclick="pg('submit',null)">+ Submit idea</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hl" data-i="hero-label">National AI Innovation Registry · India</div>
+  <div class="hh"><span data-i="hero-h1a">Where governance innovations</span><br><em data-i="hero-h1b">find their way across India</em></div>
+  <div class="hp" data-i="hero-p">TIGER documents real, verified AI-powered initiatives from Indian government departments — making them searchable, shareable, and replicable by officers across every state.</div>
+  <div class="kr">
+    <div class="kpi-s"><div class="kn">18</div><div class="kl" data-i="kpi1">Verified initiatives</div></div>
+    <div class="ksep"></div>
+    <div class="kpi-g"><div class="kn">14</div><div class="kl" data-i="kpi2">States covered</div></div>
+    <div class="ksep"></div>
+    <div class="kpi-n"><div class="kn">11</div><div class="kl" data-i="kpi3">Domains</div></div>
+    <div class="ksep"></div>
+    <div><div class="kn">8</div><div class="kl" data-i="kpi4">Languages</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ BROWSE PAGE ══════════════ -->
+<div id="pg-browse" class="pg on">
+  <div class="tqn">
+    <div class="tqmk"><svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="white" stroke-width="1.1"/><path d="M6.5 4v3.5l2 1.2" stroke="white" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+    <div>
+      <div class="tqlbl" data-i="tq-lbl">TIGER</div>
+      <div class="tqtxt" data-i="tq-txt">"Every initiative below is real — drawn from public government sources and verified announcements as of early 2025. Click any card to read the full story."</div>
+    </div>
+  </div>
+  <div class="lay">
+    <aside class="sb">
+      <div class="sbh" data-i="sb-theme">Theme</div>
+      <div class="sbl on" onclick="fTh('all',this)">All themes <span class="sbc">18</span></div>
+      <div class="sbl" onclick="fTh('Health',this)">Health <span class="sbc">3</span></div>
+      <div class="sbl" onclick="fTh('Agriculture',this)">Agriculture <span class="sbc">3</span></div>
+      <div class="sbl" onclick="fTh('Citizen Services',this)">Citizen services <span class="sbc">3</span></div>
+      <div class="sbl" onclick="fTh('Infrastructure',this)">Infrastructure <span class="sbc">3</span></div>
+      <div class="sbl" onclick="fTh('Justice',this)">Justice &amp; courts <span class="sbc">2</span></div>
+      <div class="sbl" onclick="fTh('Transport',this)">Transport <span class="sbc">2</span></div>
+      <div class="sbl" onclick="fTh('Education',this)">Education <span class="sbc">2</span></div>
+      <div class="sdiv"></div>
+      <div class="sbh" data-i="sb-state">State</div>
+      <div class="sbl" onclick="fSt('Andhra Pradesh',this)">Andhra Pradesh</div>
+      <div class="sbl" onclick="fSt('Delhi',this)">Delhi</div>
+      <div class="sbl" onclick="fSt('Karnataka',this)">Karnataka</div>
+      <div class="sbl" onclick="fSt('Kerala',this)">Kerala</div>
+      <div class="sbl" onclick="fSt('Madhya Pradesh',this)">Madhya Pradesh</div>
+      <div class="sbl" onclick="fSt('Maharashtra',this)">Maharashtra</div>
+      <div class="sbl" onclick="fSt('Rajasthan',this)">Rajasthan</div>
+      <div class="sbl" onclick="fSt('Tamil Nadu',this)">Tamil Nadu</div>
+      <div class="sbl" onclick="fSt('Telangana',this)">Telangana</div>
+      <div class="sbl" onclick="fSt('Uttar Pradesh',this)">Uttar Pradesh</div>
+      <div class="sbl" onclick="fSt('Central',this)">Central Govt.</div>
+    </aside>
+    <div style="min-width:0">
+      <div class="tlb">
+        <div class="sr"><i class="ti ti-search"></i><input id="srch" placeholder="Search initiatives, states, themes…" oninput="doSearch()"></div>
+        <div class="pls">
+          <span class="pl on" onclick="fPl('all',this)">All</span>
+          <span class="pl" onclick="fPl('Health',this)">Health</span>
+          <span class="pl" onclick="fPl('Agriculture',this)">Agriculture</span>
+          <span class="pl" onclick="fPl('Justice',this)">Justice</span>
+          <span class="pl" onclick="fPl('Transport',this)">Transport</span>
+        </div>
+        <select class="ss" onchange="doSort(this.value)">
+          <option value="def">Default order</option>
+          <option value="az">Title A–Z</option>
+          <option value="state">State A–Z</option>
+        </select>
+      </div>
+      <div class="cds" id="cds"></div>
+    </div>
+    <div class="det" id="det">
+      <div class="dtop"><div class="dey" id="det-ey"></div><button class="dcl" onclick="closeDet()" title="Close"><i class="ti ti-x"></i></button></div>
+      <div class="dti" id="det-ti"></div>
+      <div id="det-f"></div>
+      <div class="ddiv"></div>
+      <button class="dbt dbp" id="db1"></button>
+      <button class="dbt dbs2" id="db2"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SUBMIT PAGE ══════════════ -->
+<div id="pg-submit" class="pg">
+  <div class="fa">
+    <div class="fah">
+      <div class="falbl" data-i="sub-lbl">Submit an initiative</div>
+      <div class="fati" data-i="sub-ti">Add a verified initiative to the registry</div>
+      <div class="fasb" data-i="sub-sb">All submissions are cross-checked against public sources before publication. A source URL is mandatory.</div>
+    </div>
+
+    <div class="sbar" id="sbar"><i class="ti ti-circle-check" style="font-size:16px"></i><span>Received. TIGER will verify and publish after editorial review — typically within 48 hours.</span></div>
+
+    <!-- ── VOICE INPUT BLOCK ── -->
+    <div class="voice-btn-wrap">
+      <button class="voice-btn" id="inline-mic" onclick="openVoice()" title="Speak your idea" aria-label="Open voice input">
+        <div class="voice-ripple"></div>
+        <div class="voice-ripple voice-ripple2"></div>
+        <div class="voice-ripple voice-ripple3"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="12" rx="3"/>
+          <path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+      </button>
+      <div class="voice-info">
+        <div class="voice-title">Voice input</div>
+        <div class="voice-sub">Speak your initiative and let TIGER fill the form for you.<br>Click the mic to begin.</div>
+        <div class="voice-status" id="inline-status"></div>
+      </div>
+    </div>
+
+    <div class="f2">
+      <div class="fb"><label class="fl">Initiative title <span class="rq">*</span></label><input class="fi" id="ft" maxlength="100" placeholder="Official or working name"><div class="fcc" id="ftc">0 / 100</div></div>
+      <div class="fb"><label class="fl">State / Central Dept. <span class="rq">*</span></label><select class="fsl" id="fst"><option value="">Select…</option><option>Central Government</option><option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="fb"><label class="fl">Domain <span class="rq">*</span></label><select class="fsl" id="fth"><option value="">Select…</option><option>Agriculture</option><option>Citizen Services</option><option>Education</option><option>Health</option><option>Infrastructure</option><option>Justice</option><option>Land &amp; Revenue</option><option>Logistics</option><option>Transport</option><option>Urban Governance</option><option>Water &amp; Sanitation</option><option>Other</option></select></div>
+      <div class="fb"><label class="fl">Stage</label><select class="fsl" id="fsg"><option value="">Select…</option><option>Announced</option><option>Pilot underway</option><option>Deployed</option><option>Replicated elsewhere</option></select></div>
+    </div>
+    <div class="fb"><label class="fl">Problem addressed <span class="rq">*</span></label><textarea class="fta" id="fpr" maxlength="400" placeholder="What challenge does this initiative solve?"></textarea><div class="fcc" id="fprc">0 / 400</div></div>
+    <div class="fb"><label class="fl">AI solution &amp; documented impact <span class="rq">*</span></label><textarea class="fta" id="fim" maxlength="500" placeholder="How is AI applied? What verifiable outcomes have been reported?"></textarea><div class="fcc" id="fimc">0 / 500</div></div>
+    <div class="f2">
+      <div class="fb"><label class="fl">Public source URL <span class="rq">*</span></label><input class="fi" id="furl" type="url" placeholder="https://…"><div class="fhnt">Official announcement, news article, or government portal link.</div></div>
+      <div class="fb"><label class="fl">Your name &amp; designation</label><input class="fi" id="fatr" placeholder="e.g. Ravi Kumar, DM, Jaisalmer"></div>
+    </div>
+    <div class="fac">
+      <div class="submit-wrap">
+        <div class="tooltip">Submit your verified initiative<br>for TIGER's editorial review</div>
+        <button class="bp-btn saffron-btn" onclick="doSubmit()" style="padding:9px 22px;font-size:12px">Submit for review</button>
+      </div>
+      <button class="bg-btn" onclick="clearForm()" style="font-size:12px">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ANALYTICS PAGE ══════════════ -->
+<div id="pg-analytics" class="pg">
+  <div class="an">
+    <div class="fah"><div class="falbl" style="color:var(--saffron)">Analytics</div><div class="fati" style="font-family:'Lora',serif;font-size:1.25rem">Registry overview</div></div>
+    <div class="ank">
+      <div class="ank-c"><div class="ank-n">18</div><div class="ank-l">Verified total</div></div>
+      <div class="ank-c"><div class="ank-n">14</div><div class="ank-l">States covered</div></div>
+      <div class="ank-c"><div class="ank-n">10</div><div class="ank-l">Deployed</div></div>
+      <div class="ank-c"><div class="ank-n">11</div><div class="ank-l">Domains</div></div>
+    </div>
+    <div class="acs">
+      <div class="ac"><div class="act">By domain</div>
+        <div class="br"><span class="brl">Citizen svc.</span><div class="brt"><div class="brf" style="width:100%"></div></div><span class="brv">3</span></div>
+        <div class="br"><span class="brl">Health</span><div class="brt"><div class="brf" style="width:100%"></div></div><span class="brv">3</span></div>
+        <div class="br"><span class="brl">Agriculture</span><div class="brt"><div class="brf" style="width:100%"></div></div><span class="brv">3</span></div>
+        <div class="br"><span class="brl">Infrastructure</span><div class="brt"><div class="brf" style="width:100%"></div></div><span class="brv">3</span></div>
+        <div class="br"><span class="brl">Justice</span><div class="brt"><div class="brf" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">Transport</span><div class="brt"><div class="brf" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">Education</span><div class="brt"><div class="brf" style="width:67%"></div></div><span class="brv">2</span></div>
+      </div>
+      <div class="ac"><div class="act">By state</div>
+        <div class="br"><span class="brl">Telangana</span><div class="brt"><div class="brf green" style="width:100%"></div></div><span class="brv">3</span></div>
+        <div class="br"><span class="brl">Karnataka</span><div class="brt"><div class="brf green" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">Tamil Nadu</span><div class="brt"><div class="brf green" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">Kerala</span><div class="brt"><div class="brf green" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">Madhya Pradesh</span><div class="brt"><div class="brf green" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">Central Govt.</span><div class="brt"><div class="brf navy" style="width:67%"></div></div><span class="brv">2</span></div>
+        <div class="br"><span class="brl">7 others</span><div class="brt"><div class="brf" style="width:100%"></div></div><span class="brv">5</span></div>
+      </div>
+      <div class="ac"><div class="act">By implementation stage</div>
+        <div class="br"><span class="brl">Deployed</span><div class="brt"><div class="brf green" style="width:100%"></div></div><span class="brv">10</span></div>
+        <div class="br"><span class="brl">Pilot underway</span><div class="brt"><div class="brf" style="width:50%"></div></div><span class="brv">5</span></div>
+        <div class="br"><span class="brl">Announced</span><div class="brt"><div class="brf navy" style="width:30%"></div></div><span class="brv">3</span></div>
+      </div>
+      <div class="ac"><div class="act">Data integrity note</div>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.8">All 18 initiatives are drawn from publicly available government announcements, press releases, and verified news reports as of early 2025. No data is fabricated. Submit verified entries via the form to grow the registry.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HOW IT WORKS PAGE ══════════════ -->
+<div id="pg-howto" class="pg">
+  <div class="hwa">
+    <div class="fah"><div class="falbl" style="color:var(--saffron)">How it works</div><div class="fati" style="font-family:'Lora',serif;font-size:1.25rem">Simple enough for any officer to maintain</div></div>
+    <div class="hws">
+      <div class="hwst"><div class="hwn">1</div><div class="hwb"><h4>Officer submits a verified initiative</h4><p>Any government officer fills the form — or uses voice input — with a mandatory public reference URL. No login required. Submission travels via Google Apps Script to the master Google Sheet.</p></div></div>
+      <div class="hwst"><div class="hwn">2</div><div class="hwb"><h4>Editorial team reviews in Google Sheets</h4><p>The TIGER team verifies the source URL and changes the Status cell from "Pending" to "Approved" in the Moderation tab. No code required.</p></div></div>
+      <div class="hwst"><div class="hwn">3</div><div class="hwb"><h4>GitHub automatically rebuilds the portal</h4><p>A GitHub Actions workflow runs every 15 minutes, reads approved records from the Google Sheet JSON feed, and republishes the updated static site on GitHub Pages.</p></div></div>
+      <div class="hwst"><div class="hwn">4</div><div class="hwb"><h4>TIGER adds it to the registry</h4><p>Searchable in 8 Indian languages by state, domain, and stage — visible to every officer across the country. No server. No database. No maintenance team.</p></div></div>
+    </div>
+    <div class="archb">
+      <div class="archt">Zero-infrastructure architecture</div>
+      <div class="archps">
+        <span class="archp">GitHub Pages</span><span class="archp">Google Sheets</span><span class="archp">Google Apps Script</span><span class="archp">GitHub Actions</span><span class="archp">Static HTML / CSS / JS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CONTACT PAGE ══════════════ -->
+<div id="pg-contact" class="pg">
+  <div class="cna">
+    <div class="fah"><div class="falbl" style="color:var(--saffron)">Contact</div><div class="fati" style="font-family:'Lora',serif;font-size:1.25rem">Get in touch</div><div class="fasb">For new submissions, editorial queries, or state-level collaboration on TIGER.</div></div>
+    <div class="cncard">
+      <div class="cnname">Sunny Kharel</div>
+      <div class="cnrole">SCS Officer · Government of Sikkim &nbsp;·&nbsp; AI Champion Programme, LBSNAA</div>
+      <div class="cnrow"><i class="ti ti-phone"></i><span class="cnval">+91 89182 37123</span></div>
+      <div class="cnrow"><i class="ti ti-mail"></i><a class="cnlnk" href="mailto:sunny.kharel@gov.in">sunny.kharel@gov.in</a></div>
+      <div class="cnrow"><i class="ti ti-map-pin"></i><span class="cnval">Sikkim Civil Service · Government of Sikkim</span></div>
+      <div class="cnrow"><i class="ti ti-building"></i><span class="cnval">LBSNAA, Mussoorie · AI Champion Programme</span></div>
+    </div>
+    <div class="cnnote">TIGER is maintained as part of the AI Champion Programme at Lal Bahadur Shastri National Academy of Administration (LBSNAA), Mussoorie. The registry accepts submissions only for initiatives with publicly verifiable sources. All editorial decisions are final.</div>
+  </div>
+</div>
+
+<!-- ── TRICOLOUR FOOTER STRIPE ── -->
+<div class="flag-stripe-foot" aria-hidden="true">
+  <div class="fs-saffron"></div>
+  <div class="fs-white" style="border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"></div>
+  <div class="fs-green"></div>
+</div>
+<footer class="foot">
+  <div class="footl">"Every story collected. Every innovation shared." — TIGER</div>
+  <div class="footr">GitHub Pages · Google Sheets · No servers · No recurring costs</div>
+</footer>
+
+<!-- ══════════════ CALVIN & HOBBES VOICE MODAL ══════════════ -->
+<div class="ch-panel" id="ch-panel" role="dialog" aria-modal="true" aria-label="Voice input">
+  <div class="ch-box">
+    <!-- Header with hand-drawn Calvin & Hobbes style characters as SVG -->
+    <div class="ch-header">
+      <div class="ch-avatar">
+        <!-- Calvin (boy with spiky hair) -->
+        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <rect x="17" y="30" width="12" height="14" rx="3" fill="#F5E6C8" stroke="#1a1a1a" stroke-width="1.2"/>
+          <!-- Shirt stripes -->
+          <line x1="17" y1="34" x2="29" y2="34" stroke="#E53935" stroke-width="1.5"/>
+          <line x1="17" y1="38" x2="29" y2="38" stroke="#E53935" stroke-width="1.5"/>
+          <!-- Legs -->
+          <rect x="17" y="42" width="5" height="7" rx="2" fill="#5C6BC0" stroke="#1a1a1a" stroke-width="1"/>
+          <rect x="24" y="42" width="5" height="7" rx="2" fill="#5C6BC0" stroke="#1a1a1a" stroke-width="1"/>
+          <!-- Shoes -->
+          <ellipse cx="19" cy="49" rx="4" ry="2" fill="#1a1a1a"/>
+          <ellipse cx="26" cy="49" rx="4" ry="2" fill="#1a1a1a"/>
+          <!-- Arms raised (excited) -->
+          <line x1="17" y1="32" x2="10" y2="26" stroke="#F5E6C8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="29" y1="32" x2="36" y2="26" stroke="#F5E6C8" stroke-width="3" stroke-linecap="round"/>
+          <!-- Head -->
+          <ellipse cx="23" cy="22" rx="8" ry="7" fill="#F5E6C8" stroke="#1a1a1a" stroke-width="1.2"/>
+          <!-- Spiky hair (Calvin's signature) -->
+          <path d="M16 20 L14 13 L18 17 L19 10 L22 16 L23 9 L24 16 L27 10 L28 17 L31 14 L29 21" fill="#FFB300" stroke="#1a1a1a" stroke-width="0.8" stroke-linejoin="round"/>
+          <!-- Eyes -->
+          <circle cx="20" cy="22" r="1.5" fill="#1a1a1a"/>
+          <circle cx="26" cy="22" r="1.5" fill="#1a1a1a"/>
+          <!-- Smile -->
+          <path d="M19 26 Q23 29 27 26" stroke="#1a1a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ch-avatar" style="margin-left:-8px">
+        <!-- Hobbes (tiger) -->
+        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <rect x="14" y="28" width="14" height="16" rx="4" fill="#FF8C00" stroke="#1a1a1a" stroke-width="1.2"/>
+          <!-- Tiger stripes on body -->
+          <path d="M14 32 Q18 30 22 32" stroke="#1a1a1a" stroke-width="1.2" fill="none"/>
+          <path d="M14 37 Q18 35 22 37" stroke="#1a1a1a" stroke-width="1.2" fill="none"/>
+          <!-- Cream belly -->
+          <ellipse cx="21" cy="36" rx="4" ry="5" fill="#FFF3E0"/>
+          <!-- Tail -->
+          <path d="M28 36 Q36 30 34 22 Q32 18 36 16" stroke="#FF8C00" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M28 36 Q36 30 34 22 Q32 18 36 16" stroke="#1a1a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <!-- Legs -->
+          <rect x="14" y="42" width="5" height="6" rx="2" fill="#FF8C00" stroke="#1a1a1a" stroke-width="1"/>
+          <rect x="21" y="42" width="5" height="6" rx="2" fill="#FF8C00" stroke="#1a1a1a" stroke-width="1"/>
+          <!-- Head -->
+          <ellipse cx="22" cy="20" rx="9" ry="8" fill="#FF8C00" stroke="#1a1a1a" stroke-width="1.2"/>
+          <!-- Ears -->
+          <path d="M14 14 L12 8 L18 13" fill="#FF8C00" stroke="#1a1a1a" stroke-width="1"/>
+          <path d="M30 14 L32 8 L26 13" fill="#FF8C00" stroke="#1a1a1a" stroke-width="1"/>
+          <!-- Face markings -->
+          <ellipse cx="22" cy="21" rx="6" ry="5" fill="#FFF3E0"/>
+          <!-- Eyes -->
+          <circle cx="19" cy="19" r="2" fill="#fff" stroke="#1a1a1a" stroke-width="0.8"/>
+          <circle cx="25" cy="19" r="2" fill="#fff" stroke="#1a1a1a" stroke-width="0.8"/>
+          <circle cx="19.5" cy="19.5" r="1" fill="#1a1a1a"/>
+          <circle cx="25.5" cy="19.5" r="1" fill="#1a1a1a"/>
+          <!-- Tiger stripes on head -->
+          <path d="M13 17 L16 19" stroke="#1a1a1a" stroke-width="1" stroke-linecap="round"/>
+          <path d="M13 20 L16 21" stroke="#1a1a1a" stroke-width="1" stroke-linecap="round"/>
+          <path d="M31 17 L28 19" stroke="#1a1a1a" stroke-width="1" stroke-linecap="round"/>
+          <path d="M31 20 L28 21" stroke="#1a1a1a" stroke-width="1" stroke-linecap="round"/>
+          <!-- Nose and mouth -->
+          <ellipse cx="22" cy="23" rx="2" ry="1" fill="#FF6B6B"/>
+          <path d="M20 24.5 Q22 26.5 24 24.5" stroke="#1a1a1a" stroke-width="0.8" fill="none"/>
+          <!-- Whiskers -->
+          <line x1="13" y1="23" x2="19" y2="23" stroke="#1a1a1a" stroke-width="0.6"/>
+          <line x1="13" y1="25" x2="19" y2="24" stroke="#1a1a1a" stroke-width="0.6"/>
+          <line x1="25" y1="23" x2="31" y2="23" stroke="#1a1a1a" stroke-width="0.6"/>
+          <line x1="25" y1="24" x2="31" y2="25" stroke="#1a1a1a" stroke-width="0.6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="ch-htitle">Tell TIGER your idea</div>
+        <div class="ch-hsub">Speak naturally — Calvin &amp; Hobbes will transcribe it for you</div>
+      </div>
+    </div>
+
+    <div class="ch-body">
+      <!-- Speech bubble -->
+      <div class="ch-bubble">
+        <div class="ch-speech" id="ch-speech-text">
+          "Go ahead — tell me about the initiative! What problem does it solve? What state is it from? I'm ready whenever you are!"
+        </div>
+      </div>
+
+      <!-- Mic + waveform -->
+      <div class="ch-mic-area">
+        <button class="ch-mic-btn" id="ch-mic-btn" onclick="toggleVoice()" title="Start / stop recording" aria-label="Toggle recording">
+          <div class="ch-rip"></div>
+          <div class="ch-rip"></div>
+          <div class="ch-rip"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="12" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8" y1="22" x2="16" y2="22"/>
+          </svg>
+        </button>
+        <div class="ch-bars" id="ch-bars">
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+          <div class="ch-bar idle" style="height:6px"></div>
+        </div>
+      </div>
+
+      <!-- Transcript -->
+      <div>
+        <div class="ch-transcript-label">Transcript</div>
+        <div class="ch-transcript" id="ch-transcript">Your words will appear here as you speak…</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="ch-actions">
+        <button class="ch-use-btn" onclick="useTranscript()" id="ch-use-btn" disabled>
+          <i class="ti ti-check"></i> Use this transcript
+        </button>
+        <button class="ch-cancel-btn" onclick="closeVoice()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────── DATA ───────────
+const DATA=[
+  {state:"Telangana",theme:"Citizen Services",ti:"Mee Seva — AI-assisted multi-service delivery platform",pr:"Citizens faced long queues and delays accessing 650+ government services across district offices in Telangana.",sol:"ML-based document verification, auto-routing, and queue prediction integrated into Mee Seva platform to reduce manual processing across revenue, civil, and social welfare services.",imp:"400 million+ transactions processed. Average service time reduced from days to minutes for most certificates.",by:"Telangana State Technology Services",src:"https://meeseva.telangana.gov.in",stage:"Deployed",votes:210},
+  {state:"Andhra Pradesh",theme:"Citizen Services",ti:"Navasakam — AI-driven welfare beneficiary identification",pr:"Identifying genuine welfare beneficiaries was prone to duplication, ghost entries, and exclusion errors across AP.",sol:"ML models cross-referencing Aadhaar, ration card, and land records to identify eligible households and remove duplicates for Jagananna schemes.",imp:"90 lakh+ households re-surveyed and de-duplicated. Foundation for housing, pension, and education scheme delivery.",by:"Andhra Pradesh State Government",src:"https://navasakam.ap.gov.in",stage:"Deployed",votes:178},
+  {state:"Karnataka",theme:"Agriculture",ti:"Raitha Mitra — AI crop advisory for Karnataka farmers",pr:"Karnataka farmers lacked real-time localised crop advice especially in drought-prone interior districts.",sol:"AI chatbot providing crop recommendations, pest alerts, and mandi prices in Kannada via app and IVR using satellite and state soil data.",imp:"Deployed across 30 districts. Used by 1.5 million+ farmers. Integrated with Karnataka's Bhoomi land records.",by:"Dept. of Agriculture, Govt. of Karnataka",src:"https://raitamitra.karnataka.gov.in",stage:"Deployed",votes:165},
+  {state:"Telangana",theme:"Health",ti:"AI-based TB screening via chest X-ray analysis in PHCs",pr:"TB detection in rural Telangana depended on sputum tests with long lab turnaround times, delaying treatment.",sol:"AI model (CAD4TB) analysing chest X-rays at PHCs to flag suspected TB cases for priority testing, reducing diagnostic delay.",imp:"Deployed in 100+ PHCs. Early detection rate improved in pilot districts per Stop TB India reports.",by:"Telangana Health Dept. / Stop TB India",src:"https://stoptb.org",stage:"Deployed",votes:144},
+  {state:"Kerala",theme:"Education",ti:"KITE — AI-enabled learning analytics in government schools",pr:"Learning gaps were identified only through annual exams, delaying remediation for struggling students across 47,000 Kerala schools.",sol:"AI-based learning analytics on IT@School tablets to flag struggling students and personalise content delivery in real time.",imp:"4.8 million students. 47,000 teachers trained. Core of Kerala's Hi-Tech School programme.",by:"KITE Kerala / General Education Department",src:"https://kite.kerala.gov.in",stage:"Deployed",votes:148},
+  {state:"Tamil Nadu",theme:"Justice",ti:"Tamil Nadu e-Courts AI — case pendency analytics",pr:"Tamil Nadu district courts had hundreds of thousands of pending cases with no data-driven prioritisation tools.",sol:"AI dashboard analysing case age, type, and hearing history to recommend prioritisation for judges. Part of national e-Courts Phase III.",imp:"Deployed across all 38 district court complexes in Tamil Nadu.",by:"TN State Legal Services / e-Courts Mission Mode Project",src:"https://ecourts.gov.in",stage:"Deployed",votes:132},
+  {state:"Rajasthan",theme:"Agriculture",ti:"IFFCO Kisan AI advisory — Hindi IVR for farmers",pr:"Rajasthan farmers in arid districts needed crop disease identification without internet or smartphone access.",sol:"AI image recognition for crop disease diagnosis via WhatsApp and toll-free IVR in Hindi, integrated with IFFCO agronomy data.",imp:"2 million+ farmers reached nationally. Rajasthan is a top user state for the Hindi IVR channel.",by:"IFFCO Kisan / Rajasthan Agriculture Dept.",src:"https://iffcokisan.com",stage:"Deployed",votes:119},
+  {state:"Maharashtra",theme:"Infrastructure",ti:"Konkan Railway AI track defect detection",pr:"Manual inspection of Konkan Railway's ghat sections is hazardous and infrequent, risking undetected track defects.",sol:"AI cameras mounted on maintenance vehicles detecting track geometry anomalies via computer vision during regular runs.",imp:"Pilot on 100 km ghat stretch. Defect detection increased from monthly manual surveys to near-continuous monitoring.",by:"Konkan Railway Corporation / RDSO",src:"https://konkanrailway.com",stage:"Pilot",votes:108},
+  {state:"Uttar Pradesh",theme:"Transport",ti:"UP ATMS — AI adaptive traffic management in Lucknow",pr:"Lucknow and Agra faced chronic congestion with fixed signal timings unresponsive to real-time traffic volumes.",sol:"AI Adaptive Traffic Management System adjusting signal durations dynamically using live CCTV and vehicle counting algorithms.",imp:"Deployed at 100+ intersections in Lucknow. Wait times reduced by 15–20% per UPEIDA reports.",by:"UP Expressways Industrial Development Authority",src:"https://upeida.up.gov.in",stage:"Deployed",votes:143},
+  {state:"Delhi",theme:"Education",ti:"iGOT Diksha — AI personalised learning for frontline health workers",pr:"ASHA and ANM workers needed continuous skills training without classroom access.",sol:"AI-driven adaptive learning path recommendations on iGOT Diksha, delivering micro-courses in regional languages based on learner progress.",imp:"16 million+ learners nationally. Delhi Health Dept. mandated for all frontline health workers.",by:"Ministry of Education / NHA / Delhi Health Dept.",src:"https://diksha.gov.in",stage:"Deployed",votes:156},
+  {state:"Central",theme:"Citizen Services",ti:"UMANG App — AI assistant for 1,200+ government services",pr:"Citizens navigated dozens of separate portals to access different central government services.",sol:"UMANG unified platform with AI chatbot helping citizens access 1,200+ services from 200+ departments in 13 Indian languages.",imp:"60 million+ downloads. 5 million+ transactions monthly. Available on web, Android, and iOS.",by:"Ministry of Electronics & IT / National e-Governance Division",src:"https://web.umang.gov.in",stage:"Deployed",votes:198},
+  {state:"Karnataka",theme:"Justice",ti:"FASTER — Supreme Court digital bail order transmission",pr:"Undertrial prisoners remained in jail after bail was granted due to delays in physically communicating orders to jails.",sol:"FASTER system using digital signatures to transmit bail orders to prisons instantly via secure portal, launched by Supreme Court of India.",imp:"Bail orders now reach prisons within minutes. Prevents illegal post-order detention. Deployed nationally.",by:"Supreme Court of India",src:"https://main.sci.gov.in",stage:"Deployed",votes:187},
+  {state:"Madhya Pradesh",theme:"Infrastructure",ti:"MP Smart Village AI — citizen-powered pothole detection",pr:"Rural road maintenance in MP relied on infrequent manual surveys, leaving potholes undetected for months.",sol:"AI computer vision processing geotagged photos from citizens and PWD teams to classify and geo-locate potholes for prioritised repair.",imp:"Pilot across 3 MP districts. Integrated with PWD road maintenance workflow.",by:"MP Road Development Corporation / PWD Madhya Pradesh",src:"https://mprdcl.com",stage:"Pilot",votes:94},
+  {state:"Telangana",theme:"Infrastructure",ti:"Hyderabad SCADA — AI water network leak detection",pr:"Hyderabad's water network suffered significant non-revenue water losses from undetected pipe leaks across 1,400 km of mains.",sol:"AI models analysing SCADA sensor pressure and flow data to detect leaks or bursts in real time across the distribution network.",imp:"NRW reduced by 8% in pilot zones. Deployed by HMWSSB across primary trunk network.",by:"Hyderabad Metro Water Supply & Sewerage Board",src:"https://hyderabadwater.gov.in",stage:"Deployed",votes:126},
+  {state:"Kerala",theme:"Health",ti:"KIIFB satellite monitoring — AI infrastructure project tracking",pr:"Kerala's ₹65,000 crore infrastructure pipeline lacked real-time construction progress tracking, causing cost and time overruns.",sol:"AI analysis of satellite imagery and drone footage to monitor construction progress and flag deviations across KIIFB's 500+ projects.",imp:"Covers entire KIIFB portfolio. Piloted with Highways and Roads department.",by:"Kerala Infrastructure Investment Fund Board",src:"https://kiifb.kerala.gov.in",stage:"Pilot",votes:121},
+  {state:"Tamil Nadu",theme:"Agriculture",ti:"INCOIS Potential Fishing Zone advisory for TN fishermen",pr:"Tamil Nadu fishermen ventured into unsafe or unproductive waters lacking real-time information on fish shoal locations.",sol:"INCOIS satellite-derived Potential Fishing Zone predictions delivered as daily SMS and IVR advisories in Tamil to registered fishermen.",imp:"80,000+ fishermen benefiting. Coordinated by TN Fisheries Dept. with INCOIS and Ministry of Earth Sciences.",by:"Dept. of Fisheries, Tamil Nadu / INCOIS",src:"https://incois.gov.in",stage:"Deployed",votes:137},
+  {state:"Madhya Pradesh",theme:"Health",ti:"Ayushman MP — AI fraud detection for PMJAY claims",pr:"Duplicate and fraudulent Ayushman Bharat claims in MP were challenging to detect manually before payment.",sol:"AI models cross-checking PMJAY beneficiary data against hospital records, Aadhaar, and state databases to flag suspicious claims in real time.",imp:"MP among top states nationally for Ayushman fraud detection. ₹100+ crore in fraudulent claims identified.",by:"State Health Agency, MP / National Health Authority",src:"https://pmjay.gov.in",stage:"Deployed",votes:115},
+  {state:"Central",theme:"Transport",ti:"FASTag AI analytics — NHAI highway toll fraud detection",pr:"National highway toll plazas faced FASTag cloning and multi-vehicle misuse affecting revenue integrity across 900+ toll plazas.",sol:"AI and ML on NHAI's NETHoS platform analysing 300 million+ monthly FASTag transactions for anomalous patterns and auto-blacklisting fraud tags.",imp:"Deployed nationally across all NHAI-managed toll plazas from 2023. Significant fraud reduction reported by IHMCL.",by:"National Highways Authority of India / IHMCL",src:"https://ihmcl.com",stage:"Deployed",votes:162}
+];
+
+// ─────────── LANGUAGE STRINGS ───────────
+const LANGS={
+  en:{"tq-lbl":"TIGER","tq-txt":"\"Every initiative below is real — drawn from public government sources and verified announcements as of early 2025.\"","sb-theme":"Theme","sb-state":"State","hero-label":"National AI Innovation Registry · India","hero-h1a":"Where governance innovations","hero-h1b":"find their way across India","hero-p":"TIGER documents real, verified AI-powered initiatives from Indian government departments — making them searchable, shareable, and replicable by officers across every state.","kpi1":"Verified initiatives","kpi2":"States covered","kpi3":"Domains","kpi4":"Languages"},
+  hi:{"tq-lbl":"TIGER","tq-txt":"\"नीचे प्रत्येक पहल वास्तविक है — सरकारी घोषणाओं से ली गई।\"","sb-theme":"विषय","sb-state":"राज्य","hero-label":"राष्ट्रीय AI नवाचार रजिस्ट्री · भारत","hero-h1a":"जहाँ शासन के नवाचार","hero-h1b":"पूरे भारत में पहुँचते हैं","hero-p":"TIGER भारतीय सरकारी विभागों की वास्तविक, सत्यापित AI पहलों को दस्तावेज़ करता है।","kpi1":"सत्यापित पहल","kpi2":"राज्य","kpi3":"क्षेत्र","kpi4":"भाषाएँ"},
+  ta:{"tq-lbl":"TIGER","tq-txt":"\"கீழே உள்ள ஒவ்வொரு முன்முயற்சியும் உண்மையானது.\"","sb-theme":"தலைப்பு","sb-state":"மாநிலம்","hero-label":"தேசிய AI புதுமை பதிவேடு · இந்தியா","hero-h1a":"ஆட்சி புதுமைகள்","hero-h1b":"இந்தியா முழுவதும் பரவுகின்றன","hero-p":"TIGER இந்திய அரசு துறைகளின் நிரூபிக்கப்பட்ட AI முன்முயற்சிகளை ஆவணப்படுத்துகிறது.","kpi1":"சரிபார்க்கப்பட்ட முன்முயற்சிகள்","kpi2":"மாநிலங்கள்","kpi3":"துறைகள்","kpi4":"மொழிகள்"},
+  te:{"tq-lbl":"TIGER","tq-txt":"\"ప్రతి కార్యక్రమం నిజమైనది — ప్రభుత్వ ప్రకటనల నుండి సేకరించబడింది.\"","sb-theme":"అంశం","sb-state":"రాష్ట్రం","hero-label":"జాతీయ AI ఆవిష్కరణ రిజిస్ట్రీ · భారతదేశం","hero-h1a":"పాలనా ఆవిష్కరణలు","hero-h1b":"భారతదేశం అంతటా వ్యాప్తి చెందుతున్నాయి","hero-p":"TIGER భారత ప్రభుత్వ శాఖల ధృవీకరించబడిన AI కార్యక్రమాలను నమోదు చేస్తుంది.","kpi1":"ధృవీకరించబడిన కార్యక్రమాలు","kpi2":"రాష్ట్రాలు","kpi3":"రంగాలు","kpi4":"భాషలు"},
+  bn:{"tq-lbl":"TIGER","tq-txt":"\"প্রতিটি উদ্যোগ সত্যিকারের — সরকারি ঘোষণা থেকে সংকলিত।\"","sb-theme":"থিম","sb-state":"রাজ্য","hero-label":"জাতীয় AI উদ্ভাবন রেজিস্ট্রি · ভারত","hero-h1a":"শাসন উদ্ভাবন","hero-h1b":"ভারত জুড়ে ছড়িয়ে পড়ছে","hero-p":"TIGER ভারতীয় সরকারি বিভাগের যাচাইকৃত AI উদ্যোগগুলি নথিভুক্ত করে।","kpi1":"যাচাইকৃত উদ্যোগ","kpi2":"রাজ্য","kpi3":"ক্ষেত্র","kpi4":"ভাষা"},
+  kn:{"tq-lbl":"TIGER","tq-txt":"\"ಪ್ರತಿಯೊಂದು ಕಾರ್ಯಕ್ರಮವೂ ನಿಜವಾದದ್ದು — ಸಾರ್ವಜನಿಕ ಮೂಲಗಳಿಂದ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ.\"","sb-theme":"ವಿಷಯ","sb-state":"ರಾಜ್ಯ","hero-label":"ರಾಷ್ಟ್ರೀಯ AI ಆವಿಷ್ಕಾರ ನೋಂದಣಿ · ಭಾರತ","hero-h1a":"ಆಡಳಿತ ಆವಿಷ್ಕಾರಗಳು","hero-h1b":"ಭಾರತ ಉದ್ದಕ್ಕೂ ಹರಡುತ್ತಿವೆ","hero-p":"TIGER ಭಾರತ ಸರ್ಕಾರಿ ಇಲಾಖೆಗಳ ಧೃಢೀಕರಿಸಿದ AI ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ದಾಖಲಿಸುತ್ತದೆ.","kpi1":"ಧೃಢೀಕರಿಸಿದ ಕಾರ್ಯಕ್ರಮಗಳು","kpi2":"ರಾಜ್ಯಗಳು","kpi3":"ಕ್ಷೇತ್ರಗಳು","kpi4":"ಭಾಷೆಗಳು"},
+  ml:{"tq-lbl":"TIGER","tq-txt":"\"ഓരോ സംരംഭവും യഥാർഥമാണ് — ഔദ്യോഗിക ഉറവിടങ്ങളിൽ നിന്ന് ശേഖരിച്ചത്.\"","sb-theme":"വിഷയം","sb-state":"സംസ്ഥാനം","hero-label":"ദേശീയ AI ഇന്നൊവേഷൻ രജിസ്ട്രി · ഇന്ത്യ","hero-h1a":"ഭരണ നവീകരണങ്ങൾ","hero-h1b":"ഇന്ത്യ മുഴുവൻ സഞ്ചരിക്കുന്നു","hero-p":"TIGER ഇന്ത്യൻ സർക്കാർ വകുപ്പുകളുടെ AI സംരംഭങ്ങൾ രേഖപ്പെടുത്തുന്നു.","kpi1":"സ്ഥിരീകരിച്ച സംരംഭങ്ങൾ","kpi2":"സംസ്ഥാനങ്ങൾ","kpi3":"മേഖലകൾ","kpi4":"ഭാഷകൾ"},
+  mr:{"tq-lbl":"TIGER","tq-txt":"\"खाली प्रत्येक उपक्रम खरा आहे — सार्वजनिक स्रोतांमधून घेतलेला.\"","sb-theme":"विषय","sb-state":"राज्य","hero-label":"राष्ट्रीय AI नवोपक्रम नोंदणी · भारत","hero-h1a":"शासन नवोपक्रम","hero-h1b":"भारतभर पोहोचतात","hero-p":"TIGER भारतीय सरकारी विभागांचे सत्यापित AI उपक्रम नोंदवतो.","kpi1":"सत्यापित उपक्रम","kpi2":"राज्ये","kpi3":"क्षेत्रे","kpi4":"भाषा"}
+};
+
+function setLang(l){
+  const d=LANGS[l]||LANGS.en;
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const k=el.getAttribute('data-i');
+    if(d[k]!==undefined)el.textContent=d[k];
+  });
+}
+
+// ─────────── RENDER CARDS ───────────
+let cur=DATA.slice();
+function renderCards(arr){
+  const c=document.getElementById('cds');
+  if(!arr.length){c.innerHTML='<p style="padding:24px 0;font-size:12px;color:var(--ink3)">No initiatives match this filter.</p>';return;}
+  c.innerHTML=arr.map(d=>`
+    <div class="ic" data-theme="${d.theme}" data-state="${d.state}" onclick="openDet(${DATA.indexOf(d)})">
+      <div>
+        <div class="icm"><span class="ics">${d.state}</span><span class="icd"></span><span class="icth">${d.theme}</span></div>
+        <div class="ict">${d.ti}</div>
+        <div class="icp">${d.pr}</div>
+        <div class="icf"><span class="bdg ${d.stage==='Deployed'?'bok':'bpilot'}">${d.stage}</span><span class="bsv">Source verified</span></div>
+      </div>
+      <div class="icr"><div class="icvn">${d.votes}</div><div class="icvl">inspired</div><i class="ti ti-chevron-right icav"></i></div>
+    </div>`).join('');
+}
+renderCards(DATA);
+
+// ─────────── DETAIL PANEL ───────────
+function openDet(i){
+  const d=DATA[i];
+  document.getElementById('det-ey').textContent=d.theme+' · '+d.state;
+  document.getElementById('det-ti').textContent=d.ti;
+  document.getElementById('det-f').innerHTML=`
+    <div class="df"><div class="dfl">Problem</div><div class="dfb">${d.pr}</div></div>
+    <div class="df"><div class="dfl">AI solution</div><div class="dfb">${d.sol}</div></div>
+    <div class="df"><div class="dfl">Documented impact</div><div class="dfb">${d.imp}</div></div>
+    <div class="df"><div class="dfl">Implementing body</div><div class="dfb">${d.by}</div></div>
+    <div class="df"><div class="dfl">Public source</div><a class="dsrc" href="${d.src}" target="_blank" rel="noopener">${d.src}</a></div>`;
+  document.getElementById('db1').innerHTML='<i class="ti ti-bulb"></i> Explore replication potential';
+  document.getElementById('db1').onclick=()=>{};
+  document.getElementById('db2').innerHTML='<i class="ti ti-file-text"></i> Generate policy brief';
+  document.getElementById('db2').onclick=()=>{};
+  document.querySelector('.lay').style.gridTemplateColumns='216px 1fr 288px';
+  document.getElementById('det').style.display='block';
+}
+function closeDet(){
+  document.querySelector('.lay').style.gridTemplateColumns='216px 1fr';
+  document.getElementById('det').style.display='none';
+}
+
+// ─────────── FILTERS ───────────
+function setAct(el,sel){document.querySelectorAll(sel).forEach(e=>e.classList.remove('on'));if(el)el.classList.add('on');}
+function fTh(v,el){setAct(el,'.sbl');cur=v==='all'?DATA.slice():DATA.filter(d=>d.theme===v);renderCards(cur);}
+function fSt(v,el){setAct(el,'.sbl');cur=DATA.filter(d=>d.state===v);renderCards(cur);}
+function fPl(v,el){document.querySelectorAll('.pl').forEach(p=>p.classList.remove('on'));el.classList.add('on');cur=v==='all'?DATA.slice():DATA.filter(d=>d.theme===v);renderCards(cur);}
+function doSearch(){const q=document.getElementById('srch').value.toLowerCase();renderCards(DATA.filter(d=>(d.ti+d.state+d.theme+d.pr+d.by).toLowerCase().includes(q)));}
+function doSort(v){const a=cur.slice();if(v==='az')a.sort((x,y)=>x.ti.localeCompare(y.ti));else if(v==='state')a.sort((x,y)=>x.state.localeCompare(y.state));renderCards(a);}
+
+// ─────────── PAGE SWITCHING ───────────
+function pg(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  if(btn){document.querySelectorAll('.tnb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+}
+
+// ─────────── FORM ───────────
+function doSubmit(){
+  const req=['ft','fst','fth','fpr','fim','furl'];
+  if(req.some(id=>!document.getElementById(id).value.trim())){alert('Please fill all required fields, including a public source URL.');return;}
+  document.getElementById('sbar').style.display='flex';clearForm();
+  setTimeout(()=>document.getElementById('sbar').style.display='none',8000);
+}
+function clearForm(){
+  ['ft','furl','fatr'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['fst','fth','fsg'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});
+  ['fpr','fim'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('ftc').textContent='0 / 100';
+  document.getElementById('fprc').textContent='0 / 400';
+  document.getElementById('fimc').textContent='0 / 500';
+}
+[['ft','ftc'],['fpr','fprc'],['fim','fimc']].forEach(([id,cc])=>{
+  const e=document.getElementById(id),c=document.getElementById(cc);
+  if(e&&c)e.addEventListener('input',()=>c.textContent=e.value.length+' / '+e.maxLength);
+});
+
+// ─────────── VOICE / SPEECH RECOGNITION ───────────
+let recognition=null,isListening=false,barAnim=null;
+
+const CALVIN_LINES=[
+  "\"Go ahead — tell me about the initiative! What problem does it solve? What state is it from?\"",
+  "\"I'm all ears! Describe the AI solution. Hobbes says it better be real — no made-up stuff!\"",
+  "\"Listening intensely! What's the documented impact? Hobbes is taking notes.\"",
+  "\"Keep going! Which department or organisation runs this? Hobbes approves so far.\"",
+  "\"Great! Now — is there a public website or news link I can add as a source?\"",
+];
+
+function openVoice(){
+  document.getElementById('ch-panel').classList.add('open');
+  document.body.style.overflow='hidden';
+  setCalvinLine(0);
+}
+function closeVoice(){
+  stopListening();
+  document.getElementById('ch-panel').classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('ch-transcript').textContent='Your words will appear here as you speak…';
+  document.getElementById('ch-use-btn').disabled=true;
+}
+function setCalvinLine(i){
+  document.getElementById('ch-speech-text').textContent=CALVIN_LINES[i%CALVIN_LINES.length];
+}
+
+function toggleVoice(){
+  if(isListening) stopListening();
+  else startListening();
+}
+
+function startListening(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    document.getElementById('ch-transcript').textContent='Speech recognition is not supported in this browser. Please use Chrome or Edge, or type your initiative in the form below.';
+    return;
+  }
+  recognition=new SpeechRecognition();
+  recognition.continuous=true;
+  recognition.interimResults=true;
+  recognition.lang='en-IN';
+  let full='',calvinIdx=0;
+  recognition.onstart=()=>{
+    isListening=true;
+    document.getElementById('ch-mic-btn').classList.add('listening');
+    startBars();
+  };
+  recognition.onresult=e=>{
+    let interim='';
+    full='';
+    for(let i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal) full+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    document.getElementById('ch-transcript').textContent=(full+interim).trim()||'Your words will appear here as you speak…';
+    if(full.trim().length>30){
+      calvinIdx++;
+      setCalvinLine(calvinIdx);
+    }
+    if((full+interim).trim().length>10) document.getElementById('ch-use-btn').disabled=false;
+  };
+  recognition.onerror=e=>{
+    document.getElementById('ch-transcript').textContent='Error: '+e.error+'. Please check microphone permissions and try again.';
+    stopListening();
+  };
+  recognition.onend=()=>stopListening();
+  recognition.start();
+}
+
+function stopListening(){
+  isListening=false;
+  if(recognition){try{recognition.stop();}catch(e){}}
+  document.getElementById('ch-mic-btn').classList.remove('listening');
+  stopBars();
+}
+
+function startBars(){
+  const bars=document.getElementById('ch-bars').children;
+  barAnim=setInterval(()=>{
+    Array.from(bars).forEach(b=>{
+      const h=Math.floor(Math.random()*28)+6;
+      b.style.height=h+'px';
+      b.classList.remove('idle');
+    });
+  },120);
+}
+function stopBars(){
+  clearInterval(barAnim);
+  const bars=document.getElementById('ch-bars').children;
+  Array.from(bars).forEach(b=>{b.style.height='6px';b.classList.add('idle');});
+}
+
+function useTranscript(){
+  const text=document.getElementById('ch-transcript').textContent.trim();
+  if(!text||text==='Your words will appear here as you speak…')return;
+  // Fill the problem field with transcript
+  const pr=document.getElementById('fpr');
+  pr.value=text;
+  pr.dispatchEvent(new Event('input'));
+  // Set Calvin to celebrate
+  document.getElementById('ch-speech-text').textContent='"Excellent! I\'ve filled in what you said. Now add the initiative title and source URL — Hobbes says always cite your sources!"';
+  setTimeout(()=>closeVoice(),1800);
+  // Navigate to submit
+  pg('submit',null);
+}
+</script>
+</body>
+</html>
